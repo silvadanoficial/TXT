@@ -18,15 +18,20 @@ export default function FileUploadToTxt() {
       const reader = new FileReader();
       reader.onload = (e) => {
         const content = e.target.result;
-        const blob = new Blob([content], { type: 'text/plain' });
+        const lines = content
+          .split(/\r?\n/)
+          .map((l) => l.trim())
+          .filter((l) => l.length > 0);
+        const commaSeparated = lines.join(',');
+        const blob = new Blob([commaSeparated], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
 
-        const previewContent = content.split('\n').slice(0, 50).join('\n');
+        const previewContent = commaSeparated.split(',').slice(0, 50).join(',');
 
         newFilesData.push({
           name: file.name,
           size: file.size,
-          content,
+          content: commaSeparated,
           previewContent,
           downloadUrl: url,
           expanded: false,
@@ -64,7 +69,7 @@ export default function FileUploadToTxt() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 gap-4">
-      <h1 className="text-2xl font-bold">Upload e Gerar TXT</h1>
+      <h1 className="text-2xl font-bold">Upload e Gerar TXT Separado por Vírgula</h1>
 
       <input
         type="file"
